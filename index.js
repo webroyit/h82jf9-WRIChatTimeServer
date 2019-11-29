@@ -16,6 +16,11 @@ const io = socktio(server);
 io.on("connection", (socket) => {
     console.log("User has join");
 
+    // get the data from the client
+    socket.on("join", ({ name, room }) => {
+        console.log(name, room);
+    })
+
     // user that left the chat room
     socket.on("disconnect", () => {
         console.log("User has left");
