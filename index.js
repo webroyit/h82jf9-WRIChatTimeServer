@@ -12,6 +12,16 @@ const server = http.createServer(app);
 // instance of socket.io
 const io = socktio(server);
 
+// found user that connect to this port
+io.on("connection", (socket) => {
+    console.log("User has join");
+
+    // user that left the chat room
+    socket.on("disconnect", () => {
+        console.log("User has left");
+    })
+})
+
 // use it as middleware
 app.use(router);
 
