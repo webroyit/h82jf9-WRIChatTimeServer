@@ -2,6 +2,8 @@ const express = require('express');
 const socktio = require('socket.io');
 const http = require('http');
 
+const { addUser, removeUser, getUser, getUsersInRoom } = require("./users");
+
 const PORT = process.env.PORT || 8000;
 
 const router = require('./router');
@@ -14,11 +16,19 @@ const io = socktio(server);
 
 // found user that connect to this port
 io.on("connection", (socket) => {
-    console.log("User has join");
-
     // get the data from the client
-    socket.on("join", ({ name, room }) => {
-        console.log(name, room);
+    socket.on("join", ({ name, room }, callback) => {
+        const { error, user } = addUser({ id: socket.id, name, room });
+
+        if(error){
+            return callback(error);
+        }
+
+        // send a weclome message to that user
+        socket.emit("message", { user: "admin", text: `Hi ${user.name}, welcome to the ${user.room} room!`});
+
+        // put the user in the chatroom
+        socket.join(user.room);
     })
 
     // user that left the chat room
