@@ -27,8 +27,14 @@ io.on("connection", (socket) => {
         // send a weclome message to that user
         socket.emit("message", { user: "admin", text: `Hi ${user.name}, welcome to the ${user.room} room!`});
 
+        // send a message to all users expect that specific user
+        // to() to certain chat room
+        socket.broadcast.to(user.room).emit("message", { user: "admin", text: `${user.name} has join!`});
+
         // put the user in the chatroom
         socket.join(user.room);
+        
+        callback();
     })
 
     // user that left the chat room
