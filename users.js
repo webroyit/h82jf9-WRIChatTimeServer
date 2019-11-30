@@ -1,3 +1,5 @@
+const users = [];
+
 // helper functions
 const addUser = ({ id, name, room }) => {
     // remove white space and make all the data lowercase

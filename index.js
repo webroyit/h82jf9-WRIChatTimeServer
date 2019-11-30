@@ -14,35 +14,35 @@ const server = http.createServer(app);
 // instance of socket.io
 const io = socktio(server);
 
+// use it as middleware
+app.use(router);
+
 // found user that connect to this port
 io.on("connection", (socket) => {
     // get the data from the client
-    socket.on("join", ({ name, room }, callback) => {
+    socket.on("join", ({ name, room }) => {
         const { error, user } = addUser({ id: socket.id, name, room });
 
         if(error){
-            return callback(error);
+            return error;
         }
 
+        // put the user in the chatroom
+        socket.join(user.room);
+
         // send a weclome message to that user
-        socket.emit("message", { user: "admin", text: `Hi ${user.name}, welcome to the ${user.room} room!`});
+        socket.emit("message", { user: "admin", text: `Hi ${user.name}, welcome to the ${user.room} room!` });
 
         // send a message to all users expect that specific user
         // to() to certain chat room
         socket.broadcast.to(user.room).emit("message", { user: "admin", text: `${user.name} has join!`});
-
-        // put the user in the chatroom
-        socket.join(user.room);
-        
-        callback();
     })
 
-    socket.on("sendMessage", (message, callback) => {
+    // send a message to all the user in that chatroom
+    socket.on("sendMessage", message => {
         const user = getUser(socket.id);
 
         io.to(user.room).emit("message", { user: user.name, text: message});
-
-        callback();
     });
 
     // user that left the chat room
@@ -50,8 +50,5 @@ io.on("connection", (socket) => {
         console.log("User has left");
     });
 })
-
-// use it as middleware
-app.use(router);
 
 server.listen(PORT, () => console.log("Server is running on " + PORT));
