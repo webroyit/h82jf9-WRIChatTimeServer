@@ -47,7 +47,12 @@ io.on("connection", (socket) => {
 
     // user that left the chat room
     socket.on("disconnect", () => {
-        console.log("User has left");
+        // remove that user from the chatroom
+        const user = removeUser(socket.id);
+
+        if(user){
+            io.to(user.room).emit("message", { user: "admin", text: `${user.name} has left!`});
+        }
     });
 })
 
