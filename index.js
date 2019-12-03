@@ -35,14 +35,17 @@ io.on("connection", (socket) => {
 
         // send a message to all users expect that specific user
         // to() to certain chat room
-        socket.broadcast.to(user.room).emit("message", { user: "admin", text: `${user.name} has join!`});
+        socket.broadcast.to(user.room).emit("message", { user: "admin", text: `${user.name} has join!`} );
+
+        io.to(user.room).emit("roomData", { room: user.room, users: getUsersInRoom(user.room) });
     })
 
     // send a message to all the user in that chatroom
     socket.on("sendMessage", message => {
         const user = getUser(socket.id);
 
-        io.to(user.room).emit("message", { user: user.name, text: message});
+        io.to(user.room).emit("message", { user: user.name, text: message });
+        io.to(user.room).emit("roomData", { room: user.room, users: getUsersInRoom(user.room)});
     });
 
     // user that left the chat room
