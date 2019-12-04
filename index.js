@@ -1,6 +1,7 @@
 const express = require('express');
 const socktio = require('socket.io');
 const http = require('http');
+const cors = require('cors');
 
 const { addUser, removeUser, getUser, getUsersInRoom } = require("./users");
 
@@ -16,6 +17,9 @@ const io = socktio(server);
 
 // use it as middleware
 app.use(router);
+
+// fix cors problem
+app.use(cors());
 
 // found user that connect to this port
 io.on("connection", (socket) => {
